@@ -38,7 +38,7 @@ function install_tools () {
   )
   for tool in $(echo ${require_tools[*]})
   do
-    exec_command "apt-get install $tool"
+    exec_command "apt-get install $tool -y"
   done
   # using pip3 install latest cmake
   exec_command "pip3 install cmake"
