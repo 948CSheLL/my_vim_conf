@@ -1,4 +1,4 @@
-#### Installation
+### Installation
 
 Executing following shell script can configure vim automatically.
 
