@@ -97,8 +97,6 @@ function install_other_plugins() {
 function install_tools () { 
   login_user=$(echo $HOME | cut -d'/' -f 3)
   login_user_home=$HOME
-  git_installed=0
-  make_installed=0
   require_tools=(
     'git' 
     'make'
@@ -125,7 +123,6 @@ function install_tools () {
   )
   exec_command "apt-get update"
   exec_command "apt-get upgrade"
-
   for tool in $(echo ${require_tools[*]})
   do
     exec_command "apt-get install $tool -y"
@@ -135,11 +132,10 @@ function install_tools () {
     if [ ${tool} == "make" ];then
       make_installed=1
     fi
-    if [ ${git_installed} -ne 0 ] && [ ${make_installed} -ne 0 ];then
+    if [ ${tool} == "git" ];then
       echo "git clone other tools"
       sleep 5s
       (
-	install_vim 
 	install_minpac ${login_user} ${login_user_home}
 	install_other_plugins ${login_user} ${login_user_home}
 	install_ycm ${login_user} ${login_user_home}
@@ -147,8 +143,7 @@ function install_tools () {
     fi
   done
   wait
-  exec_command "chown -R ${login_user}:${login_user} ${login_user_home}/.vim
-
+  exec_command "chown -R ${login_user}:${login_user} ${login_user_home}/.vim"
   # using pip3 install latest cmake
   exec_command "pip3 install cmake"
   # alternate original gcc
@@ -166,3 +161,4 @@ function install_tools () {
 }
 
 install_tools
+install_vim 
