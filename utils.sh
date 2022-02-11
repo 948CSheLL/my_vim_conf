@@ -125,7 +125,7 @@ function install_vim () {
 
   fi
 
-  exec_command "ln -s /etc/alternatives/vim ${vim_directory}/bin/vim"
+  exec_command "ln -s ${vim_directory}/bin/vim /etc/alternatives/vim"
 
   if [ -e "/usr/bin/vim" ];then
 
@@ -149,7 +149,7 @@ function install_vim () {
 
   fi
 
-  exec_command "ln -s /etc/alternatives/vimdiff ${vim_directory}/bin/vimdiff"
+  exec_command "ln -s ${vim_directory}/bin/vimdiff /etc/alternatives/vimdiff"
 
 }
 
