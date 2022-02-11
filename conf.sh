@@ -14,6 +14,6 @@ function exec_command() {
 # following env for [go get] command
 export GOPROXY=https://goproxy.io
 export GO111MODULE=on
-exec_command "cd ${2}/.vim/pack/minpac/start/YouCompleteMe"
+exec_command "cd $HOME/.vim/pack/minpac/start/YouCompleteMe"
 exec_command "python3 install.py --all"
 echo "all done!!!"
