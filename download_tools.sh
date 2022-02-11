@@ -133,8 +133,6 @@ function install_tools () {
       make_installed=1
     fi
     if [ ${tool} == "git" ];then
-      echo "git clone other tools"
-      sleep 5s
       (
 	install_minpac ${login_user} ${login_user_home}
 	install_other_plugins ${login_user} ${login_user_home}
