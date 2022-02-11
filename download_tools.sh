@@ -95,8 +95,8 @@ function install_other_plugins() {
 }
 
 function install_tools () { 
-  login_user=$(echo $HOME | cut -d'/' -f 3)
-  login_user_home=$HOME
+  login_user=$(who -u | cut -d' ' -f1)
+  login_user_home=$(cat /etc/passwd | grep duoyun | cut -d':' -f6)
   require_tools=(
     'git' 
     'make'
