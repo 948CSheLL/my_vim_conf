@@ -87,8 +87,8 @@ function install_ycm() {
 }
 
 function install_other_plugins() {
-  exec_command "cp -rp .vimrc ${login_user_home}"
-  for plugin_git in $(cat ~/.vimrc | grep -e ".*minpac#add.*" | sed "s/.*('\([^,]*\)'.*/\1/g")
+  exec_command "cp -rp .vimrc ${2}"
+  for plugin_git in $(cat ${2}/.vimrc | grep -e ".*minpac#add.*" | sed "s/.*('\([^,]*\)'.*/\1/g")
   do
     plugin_name=$(echo ${plugin_git} | cut -d'/' -f 2)
     if [ ${plugin_name} == "minpac" ];then
@@ -147,7 +147,7 @@ function install_tools () {
 }
 
 login_user=$(who -u | cut -d' ' -f1)
-login_user_home=$(cat /etc/passwd | grep duoyun | cut -d':' -f6)
+login_user_home=$(cat /etc/passwd | grep ${login_user} | cut -d':' -f6)
 
 install_tools
 install_vim 
