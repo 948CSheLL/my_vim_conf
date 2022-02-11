@@ -119,6 +119,8 @@ function install_vim () {
 
   exec_command "make install"
 
+  exec_command "cd -"
+
   if [ -e "/etc/alternatives/vim" ];then
 
     rm "/etc/alternatives/vim"
@@ -175,7 +177,7 @@ function install_ycm() {
 
 function install_other_plugins() {
 
-  exec_command "cp -rp .vimrc ${2}/.vimrc"
+  exec_command "cp -rp .vimrc ${2}"
 
   for plugin_git in $(cat ${2}/.vimrc | grep -e ".*minpac#add.*" | sed "s/.*('\([^,]*\)'.*/\1/g")
 
