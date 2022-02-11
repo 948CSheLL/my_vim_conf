@@ -9,7 +9,7 @@ function logit() {
 function exec_command() {
   logit "command: ${1} ............................................ running."
   logit $(${1})
-  if [ ${exit_status})) -ne 0 ]; then
+  if [ ${exit_status} -ne 0 ]; then
   logit "command: ${1} ............................................ error!"
     exit ${exit_status}
   fi 
@@ -34,7 +34,7 @@ function exec_git_clone() {
       logit "command: ${cmd} ............................................ running."
       logit $(${cmd})
     fi
-    if [ ${exit_status})) -ne 0 ]; then
+    if [ ${exit_status} -ne 0 ]; then
       logit "command: ${cmd} ............................................ error!"
       logit "command: ${cmd} ............................................ retrying.${i}"
     else
