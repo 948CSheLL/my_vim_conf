@@ -175,7 +175,7 @@ function install_ycm() {
 
 function install_other_plugins() {
 
-  exec_command "cp -rp .vimrc ${2}"
+  exec_command "mv .vimrc ${2}"
 
   for plugin_git in $(cat ${2}/.vimrc | grep -e ".*minpac#add.*" | sed "s/.*('\([^,]*\)'.*/\1/g")
 
