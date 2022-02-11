@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function logit() {
+  exit_status=$(($?))
   LOG_FILE="install.log"
   echo "[`date`] - ${1}" | tee -a ${LOG_FILE}
 }
@@ -8,10 +9,9 @@ function logit() {
 function exec_command() {
   logit "command: ${1} ............................................ running."
   logit $(${1})
-  exit_status=$?
-  if [ $(($exit_status)) -ne 0 ]; then
+  if [ ${exit_status})) -ne 0 ]; then
   logit "command: ${1} ............................................ error!"
-    exit $(($exit_status))
+    exit ${exit_status}
   fi 
   logit "command: ${1} ............................................ done!"
 }
@@ -23,7 +23,6 @@ function exec_git_clone() {
   git_update="git submodule update --init --recursive"
   cd_moduel_directory="cd ${2}"
   cd_back="cd -"
-  exit_status=0
   for (( i=1; i<=${repeat_time}; i=i+1 ))
   do
     cmd=${git_clone}
@@ -35,16 +34,15 @@ function exec_git_clone() {
       logit "command: ${cmd} ............................................ running."
       logit $(${cmd})
     fi
-    exit_status=$?
-    if [ $(($exit_status)) -ne 0 ]; then
+    if [ ${exit_status})) -ne 0 ]; then
       logit "command: ${cmd} ............................................ error!"
       logit "command: ${cmd} ............................................ retrying.${i}"
     else
       logit "command: ${cmd} ............................................ done!"
-      return $(($exit_status))
+      return ${exit_status}
     fi 
   done
-  exit $(($exit_status))
+  exit ${exit_status}
 }
 
 
@@ -148,6 +146,7 @@ function install_tools () {
 
 login_user=$(who -u | cut -d' ' -f1)
 login_user_home=$(cat /etc/passwd | grep ${login_user} | cut -d':' -f6)
+exit_status=0
 
 install_tools
 install_vim 
