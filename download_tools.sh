@@ -121,8 +121,8 @@ function install_tools () {
     'default-jdk'
     'npm'
   )
-  exec_command "apt-get update"
-  exec_command "apt-get upgrade"
+  exec_command "apt-get update -y"
+  exec_command "apt-get upgrade -y"
   for tool in $(echo ${require_tools[*]})
   do
     exec_command "apt-get install $tool -y"
