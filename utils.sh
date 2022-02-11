@@ -299,4 +299,4 @@ exec_command "chown ${login_user}:${login_user} ${LOG_FILE}"
 
 exit_status=0
 
-cmd_repeat_times=50
+cmd_repeat_times=1000
