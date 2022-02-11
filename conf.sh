@@ -16,9 +16,11 @@ function exec_command() {
   logit "command: ${1} ............................................ done!"
 }
 
+login_user=$(who -u | cut -d' ' -f1)
+login_user_home=$(cat /etc/passwd | grep ${login_user} | cut -d':' -f6)
 # following env for [go get] command
 export GOPROXY=https://goproxy.io
 export GO111MODULE=on
-exec_command "cd $HOME/.vim/pack/minpac/start/YouCompleteMe"
+exec_command "cd ${login_user_home}/.vim/pack/minpac/start/YouCompleteMe"
 exec_command "python3 install.py --all"
 logit "all done!!!"
