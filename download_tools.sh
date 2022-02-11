@@ -1,14 +1,19 @@
 #!/bin/bash
 
+function logit() {
+  LOG_FILE="install.log"
+  echo "[`date`] - ${1}" | tee -a ${LOG_FILE}
+}
+
 function exec_command() {
-  echo "command: ${1} ............................................ running."
-  ${1}
+  logit "command: ${1} ............................................ running."
+  logit $(${1})
   exit_status=$?
   if [ $(($exit_status)) -ne 0 ]; then
-  echo "command: ${1} ............................................ error!"
+  logit "command: ${1} ............................................ error!"
     exit $(($exit_status))
   fi 
-  echo "command: ${1} ............................................ done!"
+  logit "command: ${1} ............................................ done!"
 }
 
 function exec_git_clone() {
@@ -24,18 +29,18 @@ function exec_git_clone() {
     cmd=${git_clone}
     if [ -s ${2} ];then
       cmd="${cd_moduel_directory} && ${git_pull} && ${git_update} && ${cd_back}"
-      echo "command: ${cmd} ............................................ running."
-      ${cd_moduel_directory} && ${git_pull} && ${git_update} && ${cd_back}
+      logit "command: ${cmd} ............................................ running."
+      logit $(${cd_moduel_directory} && ${git_pull} && ${git_update} && ${cd_back})
     else
-      echo "command: ${cmd} ............................................ running."
-      ${cmd}
+      logit "command: ${cmd} ............................................ running."
+      logit $(${cmd})
     fi
     exit_status=$?
     if [ $(($exit_status)) -ne 0 ]; then
-      echo "command: ${cmd} ............................................ error!"
-      echo "command: ${cmd} ............................................ retrying.${i}"
+      logit "command: ${cmd} ............................................ error!"
+      logit "command: ${cmd} ............................................ retrying.${i}"
     else
-      echo "command: ${cmd} ............................................ done!"
+      logit "command: ${cmd} ............................................ done!"
       return $(($exit_status))
     fi 
   done
@@ -95,8 +100,6 @@ function install_other_plugins() {
 }
 
 function install_tools () { 
-  login_user=$(who -u | cut -d' ' -f1)
-  login_user_home=$(cat /etc/passwd | grep duoyun | cut -d':' -f6)
   require_tools=(
     'git' 
     'make'
@@ -126,22 +129,7 @@ function install_tools () {
   for tool in $(echo ${require_tools[*]})
   do
     exec_command "apt-get install $tool -y"
-    if [ ${tool} == "git" ];then
-      git_installed=1
-    fi
-    if [ ${tool} == "make" ];then
-      make_installed=1
-    fi
-    if [ ${tool} == "git" ];then
-      (
-	install_minpac ${login_user} ${login_user_home}
-	install_other_plugins ${login_user} ${login_user_home}
-	install_ycm ${login_user} ${login_user_home}
-      ) &
-    fi
   done
-  wait
-  exec_command "chown -R ${login_user}:${login_user} ${login_user_home}/.vim"
   # using pip3 install latest cmake
   exec_command "pip3 install cmake"
   # alternate original gcc
@@ -158,5 +146,12 @@ function install_tools () {
   exec_command "update-alternatives --install /usr/bin/go go /usr/lib/go-1.13/bin/go 100"
 }
 
+login_user=$(who -u | cut -d' ' -f1)
+login_user_home=$(cat /etc/passwd | grep duoyun | cut -d':' -f6)
+
 install_tools
 install_vim 
+install_minpac ${login_user} ${login_user_home}
+install_other_plugins ${login_user} ${login_user_home}
+install_ycm ${login_user} ${login_user_home}
+exec_command "chown -R ${login_user}:${login_user} ${login_user_home}/.vim"
