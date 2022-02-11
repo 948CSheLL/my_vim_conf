@@ -2,7 +2,6 @@
 
 function logit() {
   exit_status=$?
-  LOG_FILE="install.log"
   echo "[`date`] - ${1}" | tee -a ${LOG_FILE}
 }
 
@@ -18,6 +17,7 @@ function exec_command() {
 
 login_user=$(who -u | cut -d' ' -f1)
 login_user_home=$(cat /etc/passwd | grep ${login_user} | cut -d':' -f6)
+LOG_FILE="install.log"
 exit_status=0
 
 # following env for [go get] command
