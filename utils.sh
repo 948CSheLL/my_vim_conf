@@ -295,7 +295,7 @@ login_user=$(who -u | cut -d' ' -f1)
 
 login_user_home=$(cat /etc/passwd | grep ${login_user} | cut -d':' -f6)
 
-LOG_FILE="install.log"
+LOG_FILE="$(pwd)/install.log"
 
 exec_command "chown ${login_user}:${login_user} ${LOG_FILE}"
 
