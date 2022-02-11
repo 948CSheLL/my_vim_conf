@@ -203,8 +203,6 @@ function install_tools () {
 
   require_tools=(
 
-    'git' 
-
     'make'
 
     'libgtk2.0-dev'
