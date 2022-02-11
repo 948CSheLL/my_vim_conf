@@ -119,29 +119,37 @@ function install_vim () {
 
   exec_command "make install"
 
-  if [ -e "/usr/bin/vim" ];then
+  if [ -e "/etc/alternatives/vim" ];then
 
-    exec_command "update-alternatives --install /usr/bin/vim vim ${vim_directory}/bin/vim 100"
-
-  else
-
-    exec_command "ln -s ${vim_directory}/bin/vim /etc/alternatives/vim"
-
-    exec_command "ln -s /etc/alternatives/vim /usr/bin/vim"
+    rm "/etc/alternatives/vim"
 
   fi
+
+  exec_command "ln -s /etc/alternatives/vim ${vim_directory}/bin/vim"
+
+  if [ -e "/usr/bin/vim" ];then
+
+    rm "/usr/bin/vim"
+
+  fi
+
+  exec_command "ln -s /etc/alternatives/vim /usr/bin/vim"
 
   if [ -e "/usr/bin/vimdiff" ];then
 
-    exec_command "update-alternatives --install /usr/bin/vimdiff vim ${vim_directory}/bin/vimdiff 100"
-
-  else
-
-    exec_command "ln -s ${vim_directory}/bin/vimdiff /etc/alternatives/vimdiff"
-
-    exec_command "ln -s /etc/alternatives/vimdiff /usr/bin/vimdiff"
+    rm "/usr/bin/vimdiff"
 
   fi
+
+  exec_command "ln -s /etc/alternatives/vimdiff /usr/bin/vimdiff"
+
+  if [ -e "/etc/alternatives/vimdiff" ];then
+
+    rm "/etc/alternatives/vimdiff"
+
+  fi
+
+  exec_command "ln -s /etc/alternatives/vimdiff ${vim_directory}/bin/vimdiff"
 
 }
 
