@@ -328,6 +328,10 @@ do
 
   elif [ "${option}" == "--help" ];then
 
+    echo "./install.sh: ./install.sh [[--cmd_repeat] [--git_repeat] [--log_file] | [--help]]"
+
+    echo "Download tools for vim and plugins"
+
     echo "	--git_repeat 	Set the number of times the git command execution will "
 
     echo "			try again if it encounters a network error."
