@@ -301,13 +301,7 @@ function install_tools () {
 
 }
 
-login_user=$(who -u | cut -d' ' -f1)
-
-login_user_home=$(cat /etc/passwd | grep ${login_user} | cut -d':' -f6)
-
 log_file="$(pwd)/install.log"
-
-exec_command "chown ${login_user}:${login_user} ${LOG_FILE}"
 
 git_repeat=1000
 
@@ -349,3 +343,9 @@ do
   fi
 
 done
+
+login_user=$(who -u | cut -d' ' -f1)
+
+login_user_home=$(cat /etc/passwd | grep ${login_user} | cut -d':' -f6)
+
+exec_command "chown ${login_user}:${login_user} ${LOG_FILE}"
