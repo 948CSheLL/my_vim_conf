@@ -38,7 +38,7 @@ function handle_exit_status() {
 
   exit_status=$((${2}))
 
-  if [ ${exit_status} -eq 128 ] && ([ "${3}" == "${CMD_GIT_CLONE}" ] || [ "${3}" == "${CMD_APT_INSTALL}" ]);then
+  if [ ${exit_status} -eq 128 ] && ([ "${3}" == "${CMD_GIT_CLONE}" ] || [ "${3}" == "${CMD_APT_INSTALL}" ] || [ "${3}" == "${CMD_APT_UPDATE}" ] || [ "${3}" == "${CMD_APT_UPGRADE}" ]);then
 
     handle_retry ${1} ${exit_status}
 
@@ -421,8 +421,8 @@ do
 
 done
 
-login_user=$(who -u | cut -d' ' -f1)
+LOGIN_USER=$(who -u | cut -d' ' -f1)
 
-login_user_home=$(cat /etc/passwd | grep ${login_user} | cut -d':' -f6)
+LOGIN_USER_HOME=$(cat /etc/passwd | grep ${LOGIN_USER} | cut -d':' -f6)
 
-exec_command "chown ${login_user}:${login_user} ${LOG_FILE}" "${CMD_CHOWN}"
+exec_command "chown ${LOGIN_USER}:${LOGIN_USER} ${LOG_FILE}" "${CMD_CHOWN}"
