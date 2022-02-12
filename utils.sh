@@ -51,7 +51,7 @@ function exec_command() {
 
     ${1} 2>> ${log_file}
 
-    isdone=$((handle_exit_status ${1}))
+    isdone=handle_exit_status "${1}"
 
     if [ ${isdone} -eq 0 ];then
 
@@ -328,7 +328,7 @@ do
 
   elif [ "${option}" == "--help" ];then
 
-    echo "./install.sh: ./install.sh [[--cmd_repeat] [--git_repeat] [--log_file] | [--help]]"
+    echo "Usage: ./install.sh [[--cmd_repeat] [--git_repeat] [--log_file] | [--help]]"
 
     echo "Download tools for vim and plugins"
 
