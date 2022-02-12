@@ -4,7 +4,7 @@ function logit() {
 
   exit_status=0
 
-  echo "[`date`] - ${1}" | tee -a ${LOG_FILE}
+  echo "[`date`] - ${1}" | tee -a ${log_file}
 
   exit_status=$(($?))
 
@@ -51,7 +51,7 @@ function exec_command() {
 
     ${1} 2>> ${log_file}
 
-    isdone=handle_exit_status "${1}"
+    isdone=$(handle_exit_status "${1}")
 
     if [ ${isdone} -eq 0 ];then
 
