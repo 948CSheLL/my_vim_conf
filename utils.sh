@@ -42,6 +42,8 @@ function handle_exit_status() {
 
 }
 
+# shell 函数中return 和echo 都可以返回值，混用要小心，如果使用return 来返回
+# 需要的值，返回之不能超过255，主函数需要通过$? 来引用。
 function exec_command() {
 
   logit "command: ${1} ............................................ running."
