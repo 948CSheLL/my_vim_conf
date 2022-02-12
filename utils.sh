@@ -115,8 +115,6 @@ function exec_git_clone() {
 
     else
 
-      logit "command: ${cmd} ............................................ running."
-
       exec_command "${cmd}"
 
       isdone=$(($?))
