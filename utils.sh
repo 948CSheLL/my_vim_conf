@@ -24,7 +24,7 @@ function exec_command() {
 
   if [ ${exit_status} -ne 0 ]; then
 
-    logit "command: ${1} ............................................ error!" "log"
+    logit "command: ${1} ............................................ error, exit: ${exit_status}" "log"
 
     exit ${exit_status}
 
@@ -76,7 +76,7 @@ function exec_git_clone() {
 
     if [ ${exit_status} -ne 0 ]; then
 
-      logit "command: ${cmd} ............................................ error!" "log"
+    logit "command: ${1} ............................................ error, exit: ${exit_status}" "log"
 
       logit "command: ${cmd} ............................................ retrying.${i}" "log"
 
