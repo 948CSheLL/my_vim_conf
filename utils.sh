@@ -344,6 +344,8 @@ do
 
     echo "	--log_file 	Set the absolute path of log file."
 
+    exit 0
+
   fi
 
 done
