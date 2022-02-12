@@ -40,19 +40,19 @@ function handle_exit_status() {
 
   if [ ${exit_status} -eq 128 ] && ([ "${3}" == "${CMD_GIT_CLONE}" ] || [ "${3}" == "${CMD_APT_INSTALL}" ] || [ "${3}" == "${CMD_APT_UPDATE}" ] || [ "${3}" == "${CMD_APT_UPGRADE}" ]);then
 
-    handle_retry ${1} ${exit_status}
+    handle_retry "${1}" "${exit_status}"
 
   elif [ ${exit_status} -eq 1 ] && ([ "${3}" == "${CMD_GIT_PULL}" ]);then 
 
-    handle_retry ${1} ${exit_status}
+    handle_retry "${1}" "${exit_status}"
 
   elif [ ${exit_status} -ne 0 ]; then
 
-    handle_error ${1} ${exit_status}
+    handle_error "${1}" "${exit_status}"
 
   elif [ ${exit_status} -eq 0 ];then
 
-    handle_done ${1}
+    handle_done "${1}"
 
   fi 
 
@@ -215,7 +215,7 @@ function install_minpac () {
 
   minpac_directory="${2}/.vim/pack/minpac/opt/minpac"
 
-  exec_git_clone ${minpac_git} ${minpac_directory}
+  exec_git_clone "${minpac_git}" "${minpac_directory}"
 
 }
 
@@ -225,7 +225,7 @@ function install_ycm() {
 
   ycm_directory="${2}/.vim/pack/minpac/start/YouCompleteMe"
 
-  exec_git_clone ${ycm_git} ${ycm_directory}
+  exec_git_clone "${ycm_git}" "${ycm_directory}"
 
 }
 
@@ -236,7 +236,7 @@ function install_other_plugins() {
   for plugin_git in $(cat ${2}/.vimrc | grep -e ".*minpac#add.*" | sed "s/.*('\([^,]*\)'.*/\1/g")
   do
 
-    plugin_name=$(echo "${plugin_git}" | cut -d'/' -f 2)
+    plugin_name="$(echo "${plugin_git}" | cut -d'/' -f 2)"
 
     if [ "${plugin_name}" == "minpac" ];then
 
@@ -246,7 +246,7 @@ function install_other_plugins() {
 
     plugin_directory="${2}/.vim/pack/minpac/start/${plugin_name}"
 
-    exec_git_clone ${plugin_git} ${plugin_directory}
+    exec_git_clone "${plugin_git}" "${plugin_directory}"
 
   done
 
@@ -383,19 +383,19 @@ CMD_PYTHON3="16"
 for var in ${@}
 do
 
-  option=$(echo "${var}" | cut -d'=' -f1)
+  option="$(echo "${var}" | cut -d'=' -f1)"
 
-  value=$(echo "${var}" | cut -d'=' -f2)
+  value="$(echo "${var}" | cut -d'=' -f2)"
 
-  if [ "${option}" == "--GIT_REPEAT" ] && [ -n ${value} ];then
+  if [ "${option}" == "--GIT_REPEAT" ] && [ -n "${value}" ];then
 
     GIT_REPEAT=$((${value}))
 
-  elif [ "${option}" == "--CMD_REPEAT" ] && [ -n ${value} ];then
+  elif [ "${option}" == "--CMD_REPEAT" ] && [ -n "${value}" ];then
 
     CMD_REPEAT=$((${value}))
 
-  elif [ "${option}" == "--LOG_FILE" ] && [ -n ${value} ];then
+  elif [ "${option}" == "--LOG_FILE" ] && [ -n "${value}" ];then
 
     LOG_FILE="${value}"
 
@@ -421,8 +421,8 @@ do
 
 done
 
-LOGIN_USER=$(who -u | cut -d' ' -f1)
+LOGIN_USER="$(who -u | cut -d' ' -f1)"
 
-LOGIN_USER_HOME=$(cat /etc/passwd | grep ${LOGIN_USER} | cut -d':' -f6)
+LOGIN_USER_HOME="$(cat /etc/passwd | grep ${LOGIN_USER} | cut -d':' -f6)"
 
 exec_command "chown ${LOGIN_USER}:${LOGIN_USER} ${LOG_FILE}" "${CMD_CHOWN}"
