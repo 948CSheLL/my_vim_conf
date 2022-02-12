@@ -2,7 +2,7 @@
 
 function logit() {
 
-  if [ ${2} == "cmd" ];then
+  if [ "${2}" == "cmd" ];then
 
     ${1} 2>> ${LOG_FILE}
 
@@ -103,7 +103,7 @@ function install_vim () {
 
   vim_git="vim/vim"
 
-  if [ -e ${vim_source_directory} ]; then
+  if [ -e "${vim_source_directory}" ]; then
 
     exec_command "rm -rf ${vim_source_directory}"
 
@@ -185,7 +185,7 @@ function install_other_plugins() {
 
     plugin_name=$(echo ${plugin_git} | cut -d'/' -f 2)
 
-    if [ ${plugin_name} == "minpac" ];then
+    if [ "${plugin_name}" == "minpac" ];then
 
       continue
 
