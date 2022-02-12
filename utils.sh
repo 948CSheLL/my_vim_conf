@@ -24,7 +24,7 @@ function handle_exit_status() {
 
     logit "command: ${1} ............................................ error, exit: ${exit_status}"
 
-    logit "command: ${cmd} ............................................ retrying.${i}"
+    logit "command: ${cmd} ............................................ retrying."
 
   elif [ ${exit_status} -ne 0 ]; then
 
