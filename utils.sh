@@ -4,7 +4,7 @@ function logit() {
 
   exit_status=0
 
-  echo "[`date`] - ${1}" >> -a ${log_file}
+  echo "[`date`] - ${1}" >> ${log_file}
 
   exit_status=$(($?))
 
