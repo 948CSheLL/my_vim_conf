@@ -4,13 +4,13 @@ source ./utils.sh
 
 (
 
-  install_minpac ${login_user} ${login_user_home}
+  install_minpac ${LOGIN_USER} ${LOGIN_USER_HOME}
 
-  install_other_plugins ${login_user} ${login_user_home}
+  install_other_plugins ${LOGIN_USER} ${LOGIN_USER_HOME}
 
-  install_ycm ${login_user} ${login_user_home}
+  install_ycm ${LOGIN_USER} ${LOGIN_USER_HOME}
 
-  exec_command "chown -R ${login_user}:${login_user} ${login_user_home}/.vim"
+  exec_command "chown -R ${LOGIN_USER}:${LOGIN_USER} ${LOGIN_USER_HOME}/.vim" "${CMD_CHOWN}"
 
 ) &
 

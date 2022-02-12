@@ -7,10 +7,10 @@ export GOPROXY=https://goproxy.io
 
 export GO111MODULE=on
 
-exec_command "cd ${login_user_home}/.vim/pack/minpac/start/YouCompleteMe"
+exec_command "cd ${LOGIN_USER_HOME}/.vim/pack/minpac/start/YouCompleteMe" "${CMD_CD}"
 
-exec_command "python3 install.py --all"
+exec_command "python3 install.py --all" "${CMD_PYTHON3}"
 
-exec_command "cd -"
+exec_command "cd -" "${CMD_CD}"
 
 logit "all done!!!"
