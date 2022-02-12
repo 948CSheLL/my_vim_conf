@@ -13,4 +13,4 @@ exec_command "python3 install.py --all"
 
 exec_command "cd -"
 
-logit "all done!!!" "log"
+logit "all done!!!"
