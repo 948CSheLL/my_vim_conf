@@ -2,7 +2,17 @@
 
 function logit() {
 
-    echo "[`date`] - ${1}" | tee -a ${LOG_FILE}
+  exit_status=0
+
+  echo "[`date`] - ${1}" | tee -a ${LOG_FILE}
+
+  exit_status=$(($?))
+
+  if [ ${exit_status} -ne 0 ];then
+
+    exit ${exit_status}
+
+  fi
 
 }
 
