@@ -48,6 +48,8 @@ function exec_command() {
 
   logit "command: ${1} ............................................ running."
 
+  isdonw=0
+
   for (( i=1; i<=${cmd_repeat}; i=i+1 ))
   do
 
@@ -64,6 +66,8 @@ function exec_command() {
     fi
 
   done
+
+  return ${isdone}
 
 }
 
@@ -83,6 +87,8 @@ function exec_git_clone() {
   for (( i=1; i<=${git_repeat}; i=i+1 ))
   do
 
+    isdone=0
+
     cmd=${git_clone}
 
     if [ -s ${2} ];then
@@ -93,11 +99,19 @@ function exec_git_clone() {
 
       exec_command "${cd_moduel_directory}"
 
+      isdone=$(( ${isdone} + $(($?)) ))
+
       exec_command "${git_pull}"
+
+      isdone=$(( ${isdone} + $(($?)) ))
 
       exec_command "${git_update}"
 
+      isdone=$(( ${isdone} + $(($?)) ))
+
       exec_command "${cd_back}"
+
+      isdone=$(( ${isdone} + $(($?)) ))
 
     else
 
@@ -105,7 +119,16 @@ function exec_git_clone() {
 
       exec_command "${cmd}"
 
+      isdone=$(($?))
+
     fi
+
+    if [ ${isdone} -eq 0 ];then
+
+      break
+
+    fi
+
 
   done
 
@@ -307,9 +330,9 @@ function install_tools () {
 
 log_file="$(pwd)/install.log"
 
-git_repeat=1000
+git_repeat=10
 
-cmd_repeat=10
+cmd_repeat=5
 
 for var in ${@}
 do
