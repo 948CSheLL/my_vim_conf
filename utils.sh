@@ -42,7 +42,7 @@ function handle_exit_status() {
 
     handle_retry "${1}" "${exit_status}"
 
-  elif [ ${exit_status} -eq 1 ] && ([ "${3}" == "${CMD_GIT_PULL}" ]);then 
+  elif [ ${exit_status} -eq 1 ] && ([ "${3}" == "${CMD_GIT_PULL}" ] || [ "${3}" == "${CMD_GIT_CLONE}" ]);then 
 
     handle_retry "${1}" "${exit_status}"
 
