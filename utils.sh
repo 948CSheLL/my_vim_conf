@@ -2,35 +2,54 @@
 
 function logit() {
 
-  if [ "${2}" == "cmd" ];then
-
-    ${1} 2>> ${LOG_FILE}
-
-    exit_status=$(($?))
-
-  else
-
     echo "[`date`] - ${1}" | tee -a ${LOG_FILE}
 
-  fi
+}
+
+function handle_exit_status() {
+
+  exit_status=$(($?))
+
+  if [ ${exit_status} -eq 128 ];then
+
+    logit "command: ${1} ............................................ error, exit: ${exit_status}"
+
+    logit "command: ${cmd} ............................................ retrying.${i}"
+
+  elif [ ${exit_status} -ne 0 ]; then
+
+    logit "command: ${1} ............................................ error, exit: ${exit_status}"
+
+    exit ${exit_status}
+
+  elif [ ${exit_status} -eq 0 ];then
+
+    logit "command: ${1} ............................................ done!"
+
+  fi 
+
+  return ${exit_status}
 
 }
 
 function exec_command() {
 
-  logit "command: ${1} ............................................ running." "log"
+  logit "command: ${1} ............................................ running."
 
-  logit "${1}" "cmd"
+  for (( i=1; i<=${cmd_repeat}; i=i+1 ))
+  do
 
-  if [ ${exit_status} -ne 0 ]; then
+    ${1} 2>> ${log_file}
 
-    logit "command: ${1} ............................................ error, exit: ${exit_status}" "log"
+    isdone=handle_exit_status ${1}
 
-    exit ${exit_status}
+    if [ ${isdone} -eq 0 ];then
 
-  fi 
+      break
 
-  logit "command: ${1} ............................................ done!" "log"
+    fi
+
+  done
 
 }
 
@@ -47,7 +66,7 @@ function exec_git_clone() {
 
   cd_back="cd -"
 
-  for (( i=1; i<=${cmd_repeat_times}; i=i+1 ))
+  for (( i=1; i<=${git_repeat}; i=i+1 ))
   do
 
     cmd=${git_clone}
@@ -56,41 +75,25 @@ function exec_git_clone() {
 
       cmd="${cd_moduel_directory} && ${git_pull} && ${git_update} && ${cd_back}"
 
-      logit "command: ${cmd} ............................................ running." "log"
+      logit "command: ${cmd} ............................................ running."
 
-      logit "${cd_moduel_directory}" "cmd"
+      exec_command "${cd_moduel_directory}"
 
-      logit "${git_pull}" "cmd"
+      exec_command "${git_pull}"
 
-      logit "${git_update}" "cmd"
+      exec_command "${git_update}"
 
-      logit "${cd_back}" "cmd"
+      exec_command "${cd_back}"
 
     else
 
-      logit "command: ${cmd} ............................................ running." "log"
+      logit "command: ${cmd} ............................................ running."
 
-      logit "${cmd}" "cmd"
+      exec_command "${cmd}"
 
     fi
 
-    if [ ${exit_status} -ne 0 ]; then
-
-    logit "command: ${1} ............................................ error, exit: ${exit_status}" "log"
-
-      logit "command: ${cmd} ............................................ retrying.${i}" "log"
-
-    else
-
-      logit "command: ${cmd} ............................................ done!" "log"
-
-      return ${exit_status}
-
-    fi 
-
   done
-
-  exit ${exit_status}
 
 }
 
@@ -123,7 +126,7 @@ function install_vim () {
 
   if [ -e "/etc/alternatives/vim" ];then
 
-    rm "/etc/alternatives/vim"
+    exec_command "rm /etc/alternatives/vim"
 
   fi
 
@@ -131,7 +134,7 @@ function install_vim () {
 
   if [ -e "/usr/bin/vim" ];then
 
-    rm "/usr/bin/vim"
+    exec_command "rm /usr/bin/vim"
 
   fi
 
@@ -139,7 +142,7 @@ function install_vim () {
 
   if [ -e "/usr/bin/vimdiff" ];then
 
-    rm "/usr/bin/vimdiff"
+    exec_command "rm /usr/bin/vimdiff"
 
   fi
 
@@ -147,7 +150,7 @@ function install_vim () {
 
   if [ -e "/etc/alternatives/vimdiff" ];then
 
-    rm "/etc/alternatives/vimdiff"
+    exec_command "rm /etc/alternatives/vimdiff"
 
   fi
 
@@ -180,7 +183,6 @@ function install_other_plugins() {
   exec_command "cp -rp .vimrc ${2}"
 
   for plugin_git in $(cat ${2}/.vimrc | grep -e ".*minpac#add.*" | sed "s/.*('\([^,]*\)'.*/\1/g")
-
   do
 
     plugin_name=$(echo "${plugin_git}" | cut -d'/' -f 2)
@@ -293,10 +295,45 @@ login_user=$(who -u | cut -d' ' -f1)
 
 login_user_home=$(cat /etc/passwd | grep ${login_user} | cut -d':' -f6)
 
-LOG_FILE="$(pwd)/install.log"
+log_file="$(pwd)/install.log"
 
 exec_command "chown ${login_user}:${login_user} ${LOG_FILE}"
 
-exit_status=0
+git_repeat=1000
 
-cmd_repeat_times=1000
+cmd_repeat=10
+
+for var in ${@}
+do
+
+  option=$(echo "${var}" | cut -d'=' -f1)
+
+  value=$(echo "${var}" | cut -d'=' -f2)
+
+  if [ "${option}" == "--git_repeat" ] && [ -n ${value} ];then
+
+    git_repeat=$((${value}))
+
+  elif [ "${option}" == "--cmd_repeat" ] && [ -n ${value} ];then
+
+    cmd_repeat=$((${value}))
+
+  elif [ "${option}" == "--log_file" ] && [ -n ${value} ];then
+
+    log_file="${value}"
+
+  elif [ "${option}" == "--help" ];then
+
+    echo "	--git_repeat 	Set the number of times the git command execution will "
+
+    echo "			try again if it encounters a network error."
+
+    echo "	--cmd_repeat 	Set the number of times the shell command execution "
+
+    echo "			will try again if it encounters a network error."
+
+    echo "	--log_file 	Set the absolute path of log file."
+
+  fi
+
+done
