@@ -2,39 +2,57 @@
 
 function logit() {
 
-  exit_status=0
+  echo "[`date`] - ${1}" >> ${LOG_FILE}
 
-  echo "[`date`] - ${1}" >> ${log_file}
+  if [ $(($?)) -ne 0 ];then
 
-  exit_status=$(($?))
-
-  if [ ${exit_status} -ne 0 ];then
-
-    exit ${exit_status}
+    exit $(($?))
 
   fi
 
 }
 
+function handle_retry() {
+  
+  logit "command: ${1} ............................................ error, exit_status: ${2}"
+
+  logit "command: ${1} ............................................ retrying."
+
+}
+
+function handle_error() {
+
+  logit "command: ${1} ............................................ error, exit_status: ${2}"
+
+  exit ${2}
+
+}
+
+function handle_done() {
+
+    logit "command: ${1} ............................................ done!"
+
+}
+
 function handle_exit_status() {
 
-  exit_status=$(($?))
+  exit_status=$((${2}))
 
-  if [ ${exit_status} -eq 128 ];then
+  if [ ${exit_status} -eq 128 ] && ([ "${3}" == "${CMD_GIT_CLONE}" ] || [ "${3}" == "${CMD_APT_INSTALL}" ]);then
 
-    logit "command: ${1} ............................................ error, exit: ${exit_status}"
+    handle_retry ${1} ${exit_status}
 
-    logit "command: ${cmd} ............................................ retrying."
+  elif [ ${exit_status} -eq 1 ] && ([ "${3}" == "${CMD_GIT_PULL}" ]);then 
+
+    handle_retry ${1} ${exit_status}
 
   elif [ ${exit_status} -ne 0 ]; then
 
-    logit "command: ${1} ............................................ error, exit: ${exit_status}"
-
-    exit ${exit_status}
+    handle_error ${1} ${exit_status}
 
   elif [ ${exit_status} -eq 0 ];then
 
-    logit "command: ${1} ............................................ done!"
+    handle_done ${1}
 
   fi 
 
@@ -48,14 +66,12 @@ function exec_command() {
 
   logit "command: ${1} ............................................ running."
 
-  isdonw=0
-
-  for (( i=1; i<=${cmd_repeat}; i=i+1 ))
+  for (( i=1; i<=${CMD_REPEAT}; i=i+1 ))
   do
 
-    ${1} 2>> ${log_file}
+    ${1} 2>> ${LOG_FILE}
 
-    handle_exit_status "${1}"
+    handle_exit_status "${1}" "$?" "${2}"
 
     isdone=$(($?))
 
@@ -84,7 +100,7 @@ function exec_git_clone() {
 
   cd_back="cd -"
 
-  for (( i=1; i<=${git_repeat}; i=i+1 ))
+  for (( i=1; i<=${GIT_REPEAT}; i=i+1 ))
   do
 
     isdone=0
@@ -97,25 +113,25 @@ function exec_git_clone() {
 
       logit "command: ${cmd} ............................................ running."
 
-      exec_command "${cd_moduel_directory}"
+      exec_command "${cd_moduel_directory}" "${CMD_CD}"
 
       isdone=$(( ${isdone} + $(($?)) ))
 
-      exec_command "${git_pull}"
+      exec_command "${git_pull}" "${CMD_GIT_PULL}"
 
       isdone=$(( ${isdone} + $(($?)) ))
 
-      exec_command "${git_update}"
+      exec_command "${git_update}" "${CMD_GIT_UPDATE}"
 
       isdone=$(( ${isdone} + $(($?)) ))
 
-      exec_command "${cd_back}"
+      exec_command "${cd_back}" "${CMD_CD}"
 
       isdone=$(( ${isdone} + $(($?)) ))
 
     else
 
-      exec_command "${cmd}"
+      exec_command "${cmd}" "${CMD_GIT_CLONE}"
 
       isdone=$(($?))
 
@@ -143,53 +159,53 @@ function install_vim () {
 
   if [ -e "${vim_source_directory}" ]; then
 
-    exec_command "rm -rf ${vim_source_directory}"
+    exec_command "rm -rf ${vim_source_directory}" "${CMD_RM}"
 
   fi
 
   exec_git_clone ${vim_git} ${vim_source_directory}
 
-  exec_command "cd ${vim_source_directory}/src"
+  exec_command "cd ${vim_source_directory}/src" "${CMD_CD}"
 
-  exec_command "./configure --with-features=huge --enable-multibyte --enable-rubyinterp=yes --enable-pythoninterp=yes --enable-python3interp=yes --prefix=${vim_directory}"
+  exec_command "./configure --with-features=huge --enable-multibyte --enable-rubyinterp=yes --enable-pythoninterp=yes --enable-python3interp=yes --prefix=${vim_directory}" "${CMD_CONFIGURE}"
 
-  exec_command "make"
+  exec_command "make" "${CMD_MAKE}"
 
-  exec_command "make install"
+  exec_command "make install" "${CMD_MAKE}"
 
-  exec_command "cd -"
+  exec_command "cd -" "${CMD_CD}"
 
   if [ -e "/etc/alternatives/vim" ];then
 
-    exec_command "rm /etc/alternatives/vim"
+    exec_command "rm /etc/alternatives/vim" "${CMD_RM}"
 
   fi
 
-  exec_command "ln -s ${vim_directory}/bin/vim /etc/alternatives/vim"
+  exec_command "ln -s ${vim_directory}/bin/vim /etc/alternatives/vim" "${CMD_LN}"
 
   if [ -e "/usr/bin/vim" ];then
 
-    exec_command "rm /usr/bin/vim"
+    exec_command "rm /usr/bin/vim" "${CMD_RM}"
 
   fi
 
-  exec_command "ln -s /etc/alternatives/vim /usr/bin/vim"
+  exec_command "ln -s /etc/alternatives/vim /usr/bin/vim" "${CMD_LN}"
 
   if [ -e "/usr/bin/vimdiff" ];then
 
-    exec_command "rm /usr/bin/vimdiff"
+    exec_command "rm /usr/bin/vimdiff" "${CMD_RM}"
 
   fi
 
-  exec_command "ln -s /etc/alternatives/vimdiff /usr/bin/vimdiff"
+  exec_command "ln -s /etc/alternatives/vimdiff /usr/bin/vimdiff" "${CMD_LN}"
 
   if [ -e "/etc/alternatives/vimdiff" ];then
 
-    exec_command "rm /etc/alternatives/vimdiff"
+    exec_command "rm /etc/alternatives/vimdiff" "${CMD_RM}"
 
   fi
 
-  exec_command "ln -s ${vim_directory}/bin/vimdiff /etc/alternatives/vimdiff"
+  exec_command "ln -s ${vim_directory}/bin/vimdiff /etc/alternatives/vimdiff" "${CMD_LN}"
 
 }
 
@@ -215,7 +231,7 @@ function install_ycm() {
 
 function install_other_plugins() {
 
-  exec_command "cp -rp .vimrc ${2}"
+  exec_command "cp -rp .vimrc ${2}" "${CMD_CP}"
 
   for plugin_git in $(cat ${2}/.vimrc | grep -e ".*minpac#add.*" | sed "s/.*('\([^,]*\)'.*/\1/g")
   do
@@ -284,53 +300,85 @@ function install_tools () {
 
   )
 
-  exec_command "apt-get update -y"
+  exec_command "apt-get update -y" "${CMD_APT_UPDATE}"
 
-  exec_command "apt-get upgrade -y"
+  exec_command "apt-get upgrade -y" "${CMD_APT_UPGRADE}"
 
   for tool in $(echo "${require_tools[*]}")
 
   do
 
-    exec_command "apt-get install $tool -y"
+    exec_command "apt-get install $tool -y" "${CMD_APT_INSTALL}"
 
   done
 
   # using pip3 install latest cmake
 
-  exec_command "pip3 install cmake"
+  exec_command "pip3 install cmake" "${CMD_PIP}"
 
   # alternate original gcc
 
-  exec_command "update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100"
+  exec_command "update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100" "${CMD_UPDATE_ALTERNATIVES}"
 
   # alternate original g++
 
-  exec_command "update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100"
+  exec_command "update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100" "${CMD_UPDATE_ALTERNATIVES}"
 
   # alternate original clang
 
-  exec_command "update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100"
+  exec_command "update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100" "${CMD_UPDATE_ALTERNATIVES}"
 
   # alternate original clang++
 
-  exec_command "update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-7 100"
+  exec_command "update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-7 100" "${CMD_UPDATE_ALTERNATIVES}"
 
   # alternate original clangd
 
-  exec_command "update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-10 100"
+  exec_command "update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-10 100" "${CMD_UPDATE_ALTERNATIVES}"
 
   # alternate original golang
 
-  exec_command "update-alternatives --install /usr/bin/go go /usr/lib/go-1.13/bin/go 100"
+  exec_command "update-alternatives --install /usr/bin/go go /usr/lib/go-1.13/bin/go 100" "${CMD_UPDATE_ALTERNATIVES}"
 
 }
 
-log_file="$(pwd)/install.log"
+LOG_FILE="$(pwd)/install.log"
 
-git_repeat=10
+GIT_REPEAT=10
 
-cmd_repeat=5
+CMD_REPEAT=5
+
+CMD_UPDATE_ALTERNATIVES="1"
+
+CMD_CD="2"
+
+CMD_GIT_PULL="3"
+
+CMD_GIT_UPDATE="4"
+
+CMD_APT_UPDATE="5"
+
+CMD_APT_UPGRADE="6" 
+
+CMD_APT_INSTALL="7" 
+
+CMD_CHOWN="8" 
+
+CMD_RM="9" 
+
+CMD_GIT_CLONE="10" 
+
+CMD_MAKE="11"
+
+CMD_CONFIGURE="12"
+
+CMD_LN="13"
+
+CMD_CP="14"
+
+CMD_PIP="15"
+
+CMD_PYTHON3="16"
 
 for var in ${@}
 do
@@ -339,33 +387,33 @@ do
 
   value=$(echo "${var}" | cut -d'=' -f2)
 
-  if [ "${option}" == "--git_repeat" ] && [ -n ${value} ];then
+  if [ "${option}" == "--GIT_REPEAT" ] && [ -n ${value} ];then
 
-    git_repeat=$((${value}))
+    GIT_REPEAT=$((${value}))
 
-  elif [ "${option}" == "--cmd_repeat" ] && [ -n ${value} ];then
+  elif [ "${option}" == "--CMD_REPEAT" ] && [ -n ${value} ];then
 
-    cmd_repeat=$((${value}))
+    CMD_REPEAT=$((${value}))
 
-  elif [ "${option}" == "--log_file" ] && [ -n ${value} ];then
+  elif [ "${option}" == "--LOG_FILE" ] && [ -n ${value} ];then
 
-    log_file="${value}"
+    LOG_FILE="${value}"
 
   elif [ "${option}" == "--help" ];then
 
-    echo "Usage: ./install.sh [[--cmd_repeat] [--git_repeat] [--log_file] | [--help]]"
+    echo "Usage: ./install.sh [[--CMD_REPEAT] [--GIT_REPEAT] [--LOG_FILE] | [--help]]"
 
     echo "Download tools for vim and plugins"
 
-    echo "	--git_repeat 	Set the number of times the git command execution will "
+    echo "	--GIT_REPEAT 	Set the number of times the git command execution will "
 
     echo "			try again if it encounters a network error."
 
-    echo "	--cmd_repeat 	Set the number of times the shell command execution "
+    echo "	--CMD_REPEAT 	Set the number of times the shell command execution "
 
     echo "			will try again if it encounters a network error."
 
-    echo "	--log_file 	Set the absolute path of log file."
+    echo "	--LOG_FILE 	Set the absolute path of log file."
 
     exit 0
 
@@ -377,4 +425,4 @@ login_user=$(who -u | cut -d' ' -f1)
 
 login_user_home=$(cat /etc/passwd | grep ${login_user} | cut -d':' -f6)
 
-exec_command "chown ${login_user}:${login_user} ${log_file}"
+exec_command "chown ${login_user}:${login_user} ${LOG_FILE}" "${CMD_CHOWN}"
