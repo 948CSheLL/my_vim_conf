@@ -183,7 +183,7 @@ function install_other_plugins() {
 
   do
 
-    plugin_name=$(echo ${plugin_git} | cut -d'/' -f 2)
+    plugin_name=$(echo "${plugin_git}" | cut -d'/' -f 2)
 
     if [ "${plugin_name}" == "minpac" ];then
 
@@ -251,7 +251,7 @@ function install_tools () {
 
   exec_command "apt-get upgrade -y"
 
-  for tool in $(echo ${require_tools[*]})
+  for tool in $(echo "${require_tools[*]}")
 
   do
 
