@@ -38,11 +38,15 @@ function handle_exit_status() {
 
   exit_status=$((${2}))
 
-  if [ ${exit_status} -eq 128 ] && ([ "${3}" == "${CMD_GIT_CLONE}" ] || [ "${3}" == "${CMD_APT_INSTALL}" ] || [ "${3}" == "${CMD_APT_UPDATE}" ] || [ "${3}" == "${CMD_APT_UPGRADE}" ]);then
+  if [ ${exit_status} -eq 128 ] && ([ "${3}" == "${CMD_GIT_CLONE}" ]);then
 
     handle_retry "${1}" "${exit_status}"
 
   elif [ ${exit_status} -eq 1 ] && ([ "${3}" == "${CMD_GIT_PULL}" ] || [ "${3}" == "${CMD_GIT_CLONE}" ]);then 
+
+    handle_retry "${1}" "${exit_status}"
+
+  elif [ ${exit_status} -eq 100 ] && ([ "${3}" == "${CMD_APT_INSTALL}" ] || [ "${3}" == "${CMD_APT_UPDATE}" ] || [ "${3}" == "${CMD_APT_UPGRADE}" ]);then 
 
     handle_retry "${1}" "${exit_status}"
 
