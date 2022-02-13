@@ -19,3 +19,5 @@ install_tools
 wait
 
 install_vim 
+
+echo "./download_tools.sh all done !!!" | tee -a ${LOG_FILE}
