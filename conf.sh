@@ -13,4 +13,4 @@ exec_command "python3 install.py --all" "${CMD_PYTHON3}"
 
 exec_command "cd -" "${CMD_CD}"
 
-logit "all done!!!"
+echo "./conf.sh all done !!!" | tee -a ${LOG_FILE}
