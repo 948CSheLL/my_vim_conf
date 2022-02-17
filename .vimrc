@@ -1,10 +1,15 @@
 " vim:set expandtab shiftwidth=2 tabstop=8 textwidth=72:
 
 if exists('$VIM_TERMINAL')
+  " 打印错误信息，错误信息可以通过:message 进行查看。
   echoerr 'Do not run Vim inside a Vim terminal'
+  " quit 就是常用的:q
   quit
 endif
 
+" 下面这个语句有点儿多余，因为正规的写法需要将autocmd 放到
+" augroup 中，之后在组里调用autocmd! 。
+" has 返回数值，如果支持特性 {feature} 则为 1，不然为零。{feature} 参数是字符串。
 if has('autocmd')
   " 为了可以重新执行 vimrc，开头先清除当前组的自动命令
   au!
@@ -20,12 +25,24 @@ if has('gui_running')
   let do_no_lazyload_menus = 1
 endif
 
-set enc=utf-8
+" 设置 Vim 内部使用的字符编码。它应用于缓冲区、寄存器、表达式所用的字符
+" 串、viminfo 保存的等等各种文本。 缺省: latin1 或者 $LANG 的值
+set encoding=utf-8
 source $VIMRUNTIME/vimrc_example.vim
 
 " 启用 man 插件
 source $VIMRUNTIME/ftplugin/man.vim
 
+" fileencoding选项设置此缓冲区所在文件的字符编码。
+" 如果 'fileencoding' 不同于 'encoding'，写文件时需要进行转换。读文件时
+" 见下。
+" 如果 'fileencoding' 为空，使用 'encoding' 相同的值 (而读写文件也不需要
+" 转换)。
+" 设置此值时不会报错，只有在使用的时候，写入文件的时候才会。
+" fileencodings 选项这是一个字符编码的列表，开始编辑已存在的文件时，参考此选项。如果文件被
+" 读入，Vim 尝试使用本列表第一个字符编码。如果检测到错误，使用列表的下一
+" 个。如果找到一个能用的编码，设置 'fileencoding' 为该值。如果全都失败，
+" 'fileencoding' 设为空字符串，这意味着使用 'encoding' 的值。
 set fileencodings=ucs-bom,utf-8,gb18030,latin1
 set formatoptions+=mM
 set keywordprg=:Man
@@ -73,7 +90,8 @@ if exists('g:loaded_minpac')
   call minpac#add('k-takata/minpac', {'type': 'opt'})
 
   " Other plugins
-  call minpac#add('adah1972/vim-copy-as-rtf')
+  " 这个插件在mac 上才有用
+  " call minpac#add('adah1972/vim-copy-as-rtf')
   call minpac#add('airblade/vim-gitgutter')
   call minpac#add('junegunn/fzf', {'do': {-> fzf#install()}})
   call minpac#add('junegunn/fzf.vim')
@@ -90,6 +108,8 @@ if exists('g:loaded_minpac')
   call minpac#add('vim-airline/vim-airline')
   call minpac#add('vim-scripts/SyntaxAttr.vim')
   call minpac#add('yegappan/mru')
+  call minpac#add('948CSheLL/YouCompleteMe')
+  call minpac#add('948CSheLL/gen_common_code')
 endif
 
 if has('eval')

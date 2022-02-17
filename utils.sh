@@ -159,7 +159,7 @@ function install_vim () {
 
   vim_directory="/usr/local/vim82"
 
-  vim_git="vim/vim"
+  vim_git="948CSheLL/vim"
 
   if [ -e "${vim_source_directory}" ]; then
 
@@ -220,16 +220,6 @@ function install_minpac () {
   minpac_directory="${2}/.vim/pack/minpac/opt/minpac"
 
   exec_git_clone "${minpac_git}" "${minpac_directory}"
-
-}
-
-function install_ycm() {
-
-  ycm_git="948CSheLL/YouCompleteMe" 
-
-  ycm_directory="${2}/.vim/pack/minpac/start/YouCompleteMe"
-
-  exec_git_clone "${ycm_git}" "${ycm_directory}"
 
 }
 
