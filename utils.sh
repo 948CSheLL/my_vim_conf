@@ -217,7 +217,7 @@ function install_minpac () {
 
   minpac_git="k-takata/minpac"
 
-  minpac_directory="${2}/.vim/pack/minpac/opt/minpac"
+  minpac_directory="${1}/.vim/pack/minpac/opt/minpac"
 
   exec_git_clone "${minpac_git}" "${minpac_directory}"
 
@@ -225,9 +225,9 @@ function install_minpac () {
 
 function install_other_plugins() {
 
-  exec_command "cp -rp .vimrc ${2}" "${CMD_CP}"
+  exec_command "cp -rp .vimrc ${1}" "${CMD_CP}"
 
-  for plugin_git in $(cat ${2}/.vimrc | grep -e ".*minpac#add.*" | sed "s/.*('\([^,]*\)'.*/\1/g")
+  for plugin_git in $(cat ${1}/.vimrc | grep -e ".*minpac#add.*" | sed "s/.*('\([^,]*\)'.*/\1/g")
   do
 
     plugin_name="$(echo "${plugin_git}" | cut -d'/' -f 2)"
@@ -238,7 +238,7 @@ function install_other_plugins() {
 
     fi
 
-    plugin_directory="${2}/.vim/pack/minpac/start/${plugin_name}"
+    plugin_directory="${1}/.vim/pack/minpac/start/${plugin_name}"
 
     exec_git_clone "${plugin_git}" "${plugin_directory}"
 
@@ -388,6 +388,14 @@ do
   elif [ "${option}" == "--CMD_REPEAT" ] && [ -n "${value}" ];then
 
     CMD_REPEAT=$((${value}))
+
+  elif [ "${option}" == "--LOGIN_USER" ] && [ -n "${value}" ];then
+
+    LOGIN_USER=${value}
+
+  elif [ "${option}" == "--LOGIN_USER_HOME" ] && [ -n "${value}" ];then
+
+    LOGIN_USER_HOME=${value}
 
   elif [ "${option}" == "--LOG_FILE" ] && [ -n "${value}" ];then
 
