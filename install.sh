@@ -10,7 +10,7 @@ if [ ${exit_status} -ne 0 ];then
 
 fi
 
-bash conf.sh $@
+bash conf.sh $@ --LOGIN_USER=$LOGNAME --LOGIN_USER_HOME=$HOME
 
 exit_status=$(($?))
 
