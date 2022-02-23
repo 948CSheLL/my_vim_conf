@@ -415,8 +415,4 @@ do
 
 done
 
-LOGIN_USER="$(who -u | cut -d' ' -f1)"
-
-LOGIN_USER_HOME="$(cat /etc/passwd | grep ${LOGIN_USER} | cut -d':' -f6)"
-
 exec_command "chown ${LOGIN_USER}:${LOGIN_USER} ${LOG_FILE}" "${CMD_CHOWN}"
