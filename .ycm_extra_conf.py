@@ -1,3 +1,4 @@
+# solve error "NoExtraConfDetected: No .ycm_extra_conf.py file detected"
 import os
 import ycm_core
  
